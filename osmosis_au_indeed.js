@@ -1,7 +1,10 @@
 var osmosis = require('osmosis');
 var Promise = require('bluebird');
+var CronJob = require('cron').CronJob;
+var JobDAO = require('./model/job');
 
-/*
+const jobDAO = new JobDAO();
+
 const theListArr = [
   {
     // start === 0
@@ -25,8 +28,8 @@ const theListArr = [
     cat: 'it_melbourne'
   }
 ];
-*/
 
+/*
 const theListArr = [
   {
     // start === 0
@@ -40,7 +43,7 @@ const theListArr = [
     cat: 'web_melbourne'
   }
 ];
-
+*/
 
 function genEachPage(theList, theListLength) {
   const theReturn = [];
@@ -79,14 +82,23 @@ function run() {
               //
               // console.log(data);
 
+
               let jobId = '';
               let jobTitle = data.jobTitle;
-              let jobUrl = data.jobUrl;
+              let jobUrl = 'https://au.indeed.com' + data.jobUrl;
               let category = listObj.cat;
 
               let advertiser = data.company;
               let summary = data.summary;
-              let whenPosted = data.date;
+
+              let whenPosted = '';
+              if(data.date === undefined) {
+                whenPosted = 'unknown';
+              }
+              else {
+                whenPosted = data.date;
+              }
+
 
               /*
               console.log('-- one data --');
@@ -98,9 +110,24 @@ function run() {
               console.log(advertiser);
               console.log(summary);
               console.log(whenPosted);
-              */  
+              */
 
-              resolve1();
+              let obj = {
+                jobId: jobId,
+                jobTitle: jobTitle,
+                jobUrl: jobUrl,
+                category: category,
+
+                advertiser: advertiser,
+                summary: summary,
+                whenPosted: whenPosted
+              };
+
+              jobDAO
+                .save(obj)
+                .then(() => {
+                  resolve1();
+                });
 
             }); // end osmosis
 
@@ -122,8 +149,14 @@ function run() {
 
 }
 
-// Run
-run()
+function cleanup() {
+  return jobDAO.delete();
+}
+
+cleanup()
+.then(() => {
+  return run();
+})
 .then(() => {
   console.log('--- all done ---');
   process.exit(0);
@@ -133,3 +166,25 @@ run()
   console.error(err);
   process.exit(1);
 });
+
+
+// var job = new CronJob('0 */45 * * * *', () => {
+//   cleanup()
+//   .then(() => {
+//     return run();
+//   })
+//   .then(() => {
+//     console.log('--- all done ---');
+//     process.exit(0);
+//   })
+//   .catch(err => {
+//     console.log('--- main error ---');
+//     console.error(err);
+//     process.exit(1);
+//   });
+// }, () => {
+//   console.log('--- cront done ---');
+// },
+//   true,
+//   'Etc/UTC'
+// );

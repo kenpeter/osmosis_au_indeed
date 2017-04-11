@@ -69,13 +69,37 @@ function run() {
             .get(singlePage)
             .find('.row') // so we actually needs to use find, to find the parent.
             .set({
-              'title': '.jobtitle',
+              'jobTitle': '.jobtitle',
+              'jobUrl': 'a@href',
               'company': '.company',
-              'summary': '.summary'
+              'summary': '.summary',
+              'date': '.date'
             })
             .data((data) => {
+              //
+              // console.log(data);
 
-              console.log(data);
+              let jobId = '';
+              let jobTitle = data.jobTitle;
+              let jobUrl = data.jobUrl;
+              let category = listObj.cat;
+
+              let advertiser = data.company;
+              let summary = data.summary;
+              let whenPosted = data.date;
+
+              /*
+              console.log('-- one data --');
+              console.log(jobId);
+              console.log(jobTitle);
+              console.log(jobUrl);
+              console.log(category);
+
+              console.log(advertiser);
+              console.log(summary);
+              console.log(whenPosted);
+              */  
+
               resolve1();
 
             }); // end osmosis

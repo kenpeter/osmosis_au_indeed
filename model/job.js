@@ -4,18 +4,13 @@ var Schema = mongodb.mongoose.Schema;
 
 var JobSchema = new Schema({
   jobId: String,
-  title:  String,
-  url: String,
+  jobTitle: String,
+  jobUrl: String,
   category: String,
+
   advertiser: String,
-
-  description: String,
-  content: String,
-  employmentType: String,
-	addressLocal: String,
-
-	addressRegion: String,
-  datePosted: { type: Date, default: Date.now },
+  summary: String,
+  whenPosted: String
 });
 
 var JobDAO = function(){};

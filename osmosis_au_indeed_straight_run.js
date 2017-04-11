@@ -153,7 +153,7 @@ function cleanup() {
   return jobDAO.delete();
 }
 
-/*
+
 cleanup()
 .then(() => {
   return run();
@@ -167,25 +167,3 @@ cleanup()
   console.error(err);
   process.exit(1);
 });
-*/
-
-var job = new CronJob('0 * 14 * * *', () => {
-  cleanup()
-  .then(() => {
-    return run();
-  })
-  .then(() => {
-    console.log('--- all done ---');
-    process.exit(0);
-  })
-  .catch(err => {
-    console.log('--- main error ---');
-    console.error(err);
-    process.exit(1);
-  });
-}, () => {
-  console.log('--- cront done ---');
-},
-  true,
-  'Etc/UTC'
-);
